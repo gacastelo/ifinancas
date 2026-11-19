@@ -14,12 +14,18 @@ class RequerimentoRepository
 
     public function save(RequerimentoDTO $DTO): Requerimento
     {
-        $sql = "INSERT INTO Requerimentos (data, descricao, valorEmCentavos, idCategoria, idUsuario)
-                VALUES (:data, :descricao, :valorEmCentavos, :idCategoria, :idUsuario)";
+        $sql = "INSERT INTO Requerimentos
+            (data, descricao, valorEmCentavos, idCategoria,
+             idUsuario, status, idUsuarioAprovado)
+            VALUES
+            (:data, :descricao, :valorEmCentavos, :idCategoria,
+             :idUsuario, :status, :idUsuarioAprovado)";
+
         $stmt = $this->conn->prepare($sql);
-        $params = $this->params($DTO);
-        $stmt->execute($params);
-        return $this->getById((int)$this->conn->lastInsertId());
+
+        $stmt->execute($this->params($DTO));
+
+        return $this->getById((int) $this->conn->lastInsertId());
     }
 
     public function getById(int $id): ?Requerimento
@@ -29,7 +35,13 @@ class RequerimentoRepository
         $r = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$r) return null;
         return new Requerimento((int)$r["id"], new DateTime($r["data"]), $r["descricao"],
-            (int)$r["valorEmCentavos"], (int)$r["idCategoria"], (int)$r["idUsuario"]);
+            (int)$r["valorEmCentavos"],
+            (int)$r["idCategoria"],
+            (int)$r["idUsuario"],
+            $r["status"],
+            new DateTime($r["createdAt"]),
+            new DateTime($r["updatedAt"]),
+            $r["idUsuarioAprovado"] !== null ? (int)$r["idUsuarioAprovado"] : null);
     }
 
     public function getAll(): ?array
@@ -40,22 +52,39 @@ class RequerimentoRepository
         if (!$rows) return null;
         $resultado = [];
         foreach ($rows as $r) {
-            $resultado[] = new Requerimento((int)$r["id"], new DateTime($r["data"]), $r["descricao"],
-                (int)$r["valorEmCentavos"], (int)$r["idCategoria"], (int)$r["idUsuario"]);
+            $resultado[] = new Requerimento(
+                (int)$r["id"],
+                new DateTime($r["data"]),
+                $r["descricao"],
+                (int)$r["valorEmCentavos"],
+                (int)$r["idCategoria"],
+                (int)$r["idUsuario"],
+                $r["status"],
+                new DateTime($r["createdAt"]),
+                new DateTime($r["updatedAt"]),
+                $r["idUsuarioAprovado"] !== null ? (int)$r["idUsuarioAprovado"] : null);
         }
         return $resultado;
     }
 
     public function update(int $id, RequerimentoDTO $DTO): ?Requerimento
     {
-        $sql = "UPDATE Requerimentos SET data = :data, descricao = :descricao,
-                valorEmCentavos = :valorEmCentavos, idCategoria = :idCategoria,
-                idUsuario = :idUsuario
-                WHERE id = :id";
+        $sql = "UPDATE Requerimentos SET
+                data = :data,
+                descricao = :descricao,
+                valorEmCentavos = :valorEmCentavos,
+                idCategoria = :idCategoria,
+                idUsuario = :idUsuario,
+                status = :status,
+                idUsuarioAprovado = :idUsuarioAprovado
+            WHERE id = :id";
+
         $params = $this->params($DTO);
         $params[":id"] = $id;
+
         $stmt = $this->conn->prepare($sql);
         $stmt->execute($params);
+
         return $this->getById($id);
     }
 
@@ -72,9 +101,11 @@ class RequerimentoRepository
             ":descricao" => $DTO->getDescricao(),
             ":valorEmCentavos" => $DTO->getValorEmCentavos(),
             ":idCategoria" => $DTO->getIdCategoria(),
-            ":idUsuario" => $DTO->getIdUsuario()
+            ":idUsuario" => $DTO->getIdUsuario(),
+            ":status" => $DTO->getStatus(),
+            ":idUsuarioAprovado" => $DTO->getIdUsuarioAprovado()
         ];
-        
+
         return $params;
     }
 }

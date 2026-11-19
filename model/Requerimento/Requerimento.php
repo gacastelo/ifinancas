@@ -7,10 +7,12 @@ class Requerimento
     protected int $valorEmCentavos;
     protected int $idCategoria;
     protected int $idUsuario;
+    protected string $status;
+    protected ?int $idUsuarioAprovado;
     protected DateTime $createdAt;
     protected DateTime $updatedAt;
 
-    public function __construct(int $id, DateTime $data, string $descricao, int $valorEmCentavos, int $idCategoria, int $idUsuario)
+    public function __construct(int $id, DateTime $data, string $descricao, int $valorEmCentavos, int $idCategoria, int $idUsuario, string $status, DateTime $createdAt, DateTime $updatedAt, ?int $idUsuarioAprovado = null)
     {
         $this->id = $id;
         $this->data = $data;
@@ -18,7 +20,26 @@ class Requerimento
         $this->valorEmCentavos = $valorEmCentavos;
         $this->idCategoria = $idCategoria;
         $this->idUsuario = $idUsuario;
-        $this->createdAt = new DateTime();
-        $this->updatedAt = $this->createdAt;
+        $this->status = $status;
+        $this->idUsuarioAprovado = $idUsuarioAprovado;
+        $this->createdAt = $createdAt;
+        $this->updatedAt = $updatedAt;
     }
+
+
+    public function __toString(): string
+    {
+        return
+            "ID: {$this->id}\n" .
+            "Data: " . $this->data->format("d/m/Y") . "\n" .
+            "Descrição: {$this->descricao}\n" .
+            "Valor: R$ " . number_format($this->valorEmCentavos / 100, 2, ",", ".") . "\n" .
+            "Categoria: {$this->idCategoria}\n" .
+            "Usuário: {$this->idUsuario}\n" .
+            "Status: {$this->status}\n" .
+            "Aprovado por: {$this->idUsuarioAprovado}\n" .
+            "Criado em: " . $this->createdAt->format("d/m/Y H:i:s") . "\n" .
+            "Atualizado em: " . $this->updatedAt->format("d/m/Y H:i:s");
+    }
+
 }

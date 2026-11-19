@@ -117,6 +117,9 @@ class DBConfig
 
             idCategoria INT NOT NULL,
             idUsuario INT NOT NULL,
+    
+            status VARCHAR(30) NOT NULL DEFAULT 'EM_ESPERA',
+            idUsuarioAprovado INT,
 
             createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -128,6 +131,10 @@ class DBConfig
 
             CONSTRAINT fk_requerimentos_usuario
                 FOREIGN KEY (idUsuario)
+                REFERENCES usuarios(id),
+            
+            CONSTRAINT fk_requerimentos_idUsuarioAprovado
+                FOREIGN KEY (idUsuarioAprovado)
                 REFERENCES usuarios(id)
         )";
 
