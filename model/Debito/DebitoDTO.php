@@ -1,5 +1,4 @@
 <?php
-
 class DebitoDTO extends FinancaDTO
 {
     private string $requerimentoID;
@@ -8,5 +7,10 @@ class DebitoDTO extends FinancaDTO
     {
         parent::__construct($data, $descricao, $valorEmCentavos, $idCategoria, $idUsuario);
         $this->requerimentoID = $requerimentoID;
+    }
+
+    public function getRequerimentoID(): string
+    {
+        return $this->requerimentoID;
     }
 }

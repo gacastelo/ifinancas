@@ -22,18 +22,49 @@ class DBConfig
             throw new PDOException($e->getMessage());
         }
     }
-    private static function initializeCategories(): void{
+
+
+    private static function initializeCategories(): void
+    {
         try {
             $conn = self::getConnection();
-            $sql = "CREATE TABLE `ifinancas`.`categorias` (
-                    `id` INT NOT NULL AUTO_INCREMENT , 
-                    `nome` VARCHAR(50) NOT NULL UNIQUE, 
-                    PRIMARY KEY (`id`))";
+
+            $sql = "CREATE TABLE IF NOT EXISTS categorias (
+            id INT NOT NULL AUTO_INCREMENT,
+            nome VARCHAR(50) NOT NULL UNIQUE,
+            PRIMARY KEY (id)
+        )";
+
             $stmt = $conn->prepare($sql);
             $stmt->execute();
+
             $conn = null;
         } catch (PDOException $e) {
-            echo "Connection failed: " . $e->getMessage();
+            echo "Erro ao criar categorias: " . $e->getMessage();
+        }
+    }
+
+    private static function initializeUsuarios(): void
+    {
+        try {
+            $conn = self::getConnection();
+
+            $sql = "CREATE TABLE IF NOT EXISTS usuarios (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nome VARCHAR(100) NOT NULL,
+            email VARCHAR(150) NOT NULL UNIQUE,
+            senha VARCHAR(255) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                ON UPDATE CURRENT_TIMESTAMP
+        )";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+
+            $conn = null;
+        } catch (PDOException $e) {
+            echo "Erro ao criar usuarios: " . $e->getMessage();
         }
     }
 
@@ -41,36 +72,133 @@ class DBConfig
     {
         try {
             $conn = self::getConnection();
-            $sql = "CREATE TABLE financas (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    data DATE NOT NULL,
-                    descricao VARCHAR(255) NOT NULL,
-                    valorEmCentavos INT NOT NULL,
-                
-                    idCategoria INT NOT NULL,
-                    idUsuario INT NOT NULL,
-                
-                    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-                        ON UPDATE CURRENT_TIMESTAMP,
-                
-                    CONSTRAINT fk_financas_categoria
-                        FOREIGN KEY (idCategoria)
-                        REFERENCES categorias(id),
-                
-                    CONSTRAINT fk_financas_usuario
-                        FOREIGN KEY (idUsuario)
-                        REFERENCES usuarios(id));";
+
+            $sql = "CREATE TABLE IF NOT EXISTS financas (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            data DATE NOT NULL,
+            descricao VARCHAR(255) NOT NULL,
+            valorEmCentavos INT NOT NULL,
+
+            idCategoria INT NOT NULL,
+            idUsuario INT NOT NULL,
+
+            createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+                ON UPDATE CURRENT_TIMESTAMP,
+
+            CONSTRAINT fk_financas_categoria
+                FOREIGN KEY (idCategoria)
+                REFERENCES categorias(id),
+
+            CONSTRAINT fk_financas_usuario
+                FOREIGN KEY (idUsuario)
+                REFERENCES usuarios(id)
+        )";
+
             $stmt = $conn->prepare($sql);
             $stmt->execute();
+
             $conn = null;
         } catch (PDOException $e) {
-            echo "Connection failed: " . $e->getMessage();
+            echo "Erro ao criar financas: " . $e->getMessage();
         }
     }
+
+    private static function initializeRequerimento(): void
+    {
+        try {
+            $conn = self::getConnection();
+
+            $sql = "CREATE TABLE IF NOT EXISTS requerimentos (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            data DATE NOT NULL,
+            descricao VARCHAR(255) NOT NULL,
+            valorEmCentavos INT NOT NULL,
+
+            idCategoria INT NOT NULL,
+            idUsuario INT NOT NULL,
+
+            createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+                ON UPDATE CURRENT_TIMESTAMP,
+
+            CONSTRAINT fk_requerimentos_categoria
+                FOREIGN KEY (idCategoria)
+                REFERENCES categorias(id),
+
+            CONSTRAINT fk_requerimentos_usuario
+                FOREIGN KEY (idUsuario)
+                REFERENCES usuarios(id)
+        )";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+
+            $conn = null;
+        } catch (PDOException $e) {
+            echo "Erro ao criar requerimentos: " . $e->getMessage();
+        }
+    }
+
+    private static function initializeCredito(): void
+    {
+        try {
+            $conn = self::getConnection();
+
+            $sql = "CREATE TABLE IF NOT EXISTS creditos (
+            idFinancia INT PRIMARY KEY,
+
+            CONSTRAINT fk_creditos_financas
+                FOREIGN KEY (idFinancia)
+                REFERENCES financas(id)
+                ON DELETE CASCADE
+        )";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+
+            $conn = null;
+        } catch (PDOException $e) {
+            echo "Erro ao criar creditos: " . $e->getMessage();
+        }
+    }
+
+    private static function initializeDebito(): void
+    {
+        try {
+            $conn = self::getConnection();
+
+            $sql = "CREATE TABLE IF NOT EXISTS debitos (
+            idFinancia INT PRIMARY KEY,
+            requerimentoID INT NOT NULL,
+
+            CONSTRAINT fk_debitos_financas
+                FOREIGN KEY (idFinancia)
+                REFERENCES financas(id)
+                ON DELETE CASCADE,
+
+            CONSTRAINT fk_debitos_requerimentos
+                FOREIGN KEY (requerimentoID)
+                REFERENCES requerimentos(id)
+        )";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+
+            $conn = null;
+        } catch (PDOException $e) {
+            echo "Erro ao criar debitos: " . $e->getMessage();
+        }
+    }
+
 
     public static function initializeDB(): void
     {
         self::initializeCategories();
+        self::initializeUsuarios();
+        self::initializeFinanca();
+        self::initializeRequerimento();
+        self::initializeCredito();
+        self::initializeDebito();
     }
 }

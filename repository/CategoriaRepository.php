@@ -1,7 +1,7 @@
 <?php
 
 require_once "../config/DBConfig.php";
-require_once "../Model/Categoria.php";
+require_once "../Model/Categoria/Categoria.php";
 
 class CategoriaRepository
 {

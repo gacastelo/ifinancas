@@ -1,9 +1,14 @@
 <?php
 require_once "../repository/FinancaRepository.php";
+require_once "../model/Financa/Financa.php";
+require_once "../model/Financa/FinancaDTO.php";
+
 class FinancaService
 {
     private FinancaRepository $financasRepository;
-    public function __construct(){
+
+    public function __construct()
+    {
         $this->financasRepository = new FinancaRepository();
     }
 
