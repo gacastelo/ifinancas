@@ -41,10 +41,26 @@ class DBConfig
     {
         try {
             $conn = self::getConnection();
-            $sql = "CREATE TABLE `ifinancas`.`financas` (
-                    `id`  NOT NULL, 
-                    `nome` VARCHAR(50) NOT NULL UNIQUE, 
-                    PRIMARY KEY (`id`))";
+            $sql = "CREATE TABLE financas (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    data DATE NOT NULL,
+                    descricao VARCHAR(255) NOT NULL,
+                    valorEmCentavos INT NOT NULL,
+                
+                    idCategoria INT NOT NULL,
+                    idUsuario INT NOT NULL,
+                
+                    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+                        ON UPDATE CURRENT_TIMESTAMP,
+                
+                    CONSTRAINT fk_financas_categoria
+                        FOREIGN KEY (idCategoria)
+                        REFERENCES categorias(id),
+                
+                    CONSTRAINT fk_financas_usuario
+                        FOREIGN KEY (idUsuario)
+                        REFERENCES usuarios(id));";
             $stmt = $conn->prepare($sql);
             $stmt->execute();
             $conn = null;
