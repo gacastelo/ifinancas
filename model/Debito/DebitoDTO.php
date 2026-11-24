@@ -1,4 +1,5 @@
 <?php
+require "../Model/Financa/FinancaDTO.php";
 class DebitoDTO extends FinancaDTO
 {
     private string $requerimentoID;
@@ -9,7 +10,7 @@ class DebitoDTO extends FinancaDTO
         $this->requerimentoID = $requerimentoID;
     }
 
-    public function getRequerimentoID(): string
+    public function getRequerimentoID(): int
     {
         return $this->requerimentoID;
     }

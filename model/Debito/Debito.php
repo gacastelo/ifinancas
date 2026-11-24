@@ -1,5 +1,5 @@
 <?php
-
+require "../Model/Financa/Financa.php";
 class Debito extends Financa
 {
     private string $requerimentoID;
