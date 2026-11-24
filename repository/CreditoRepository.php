@@ -14,67 +14,136 @@ class CreditoRepository
 
     public function save(CreditoDTO $DTO): Credito
     {
-        $sql = "INSERT INTO Creditos (data, descricao, valorEmCentavos, idCategoria, idUsuario)
-                VALUES (:data, :descricao, :valorEmCentavos, :idCategoria, :idUsuario)";
-        $stmt = $this->conn->prepare($sql);
-        $params = $this->params($DTO);
-        $stmt->execute($params);
-        return $this->getById((int)$this->conn->lastInsertId());
+        try {
+            $sql = "INSERT INTO financas
+                    (data, descricao, valorEmCentavos, idCategoria, idUsuario)
+                    VALUES
+                    (:data, :descricao, :valorEmCentavos, :idCategoria, :idUsuario)";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute($this->params($DTO));
+
+            $idFinancia = (int)$this->conn->lastInsertId();
+
+            $sql = "INSERT INTO creditos (idFinancia)
+                    VALUES (:idFinancia)";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([":idFinancia" => $idFinancia]);
+
+            $credito = $this->getById($idFinancia);
+
+            if ($credito === null) {
+                throw new RuntimeException("Não foi possível recuperar o crédito criado.");
+            }
+
+            return $credito;
+
+        } catch (Throwable $e) {
+            throw $e;
+        }
     }
 
     public function getById(int $id): ?Credito
     {
-        $stmt = $this->conn->prepare("SELECT * FROM Creditos WHERE id = :id");
+        $sql = "SELECT f.*
+                FROM financas f
+                INNER JOIN creditos c ON c.idFinancia = f.id
+                WHERE f.id = :id";
+
+        $stmt = $this->conn->prepare($sql);
         $stmt->execute([":id" => $id]);
+
         $r = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$r) return null;
-        return new Credito((int)$r["id"], new DateTime($r["data"]), $r["descricao"],
-            (int)$r["valorEmCentavos"], (int)$r["idCategoria"], (int)$r["idUsuario"]);
+
+        if (!$r) {
+            return null;
+        }
+
+        return new Credito(
+            (int)$r["id"],
+            new DateTime($r["data"]),
+            $r["descricao"],
+            (int)$r["valorEmCentavos"],
+            (int)$r["idCategoria"],
+            (int)$r["idUsuario"]
+        );
     }
 
     public function getAll(): ?array
     {
-        $stmt = $this->conn->prepare("SELECT * FROM Creditos ORDER BY data DESC, id DESC");
+        $sql = "SELECT f.*
+                FROM financas f
+                INNER JOIN creditos c ON c.idFinancia = f.id
+                ORDER BY f.data DESC, f.id DESC";
+
+        $stmt = $this->conn->prepare($sql);
         $stmt->execute();
+
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if (!$rows) return null;
-        $resultado = [];
-        foreach ($rows as $r) {
-            $resultado[] = new Credito((int)$r["id"], new DateTime($r["data"]), $r["descricao"],
-                (int)$r["valorEmCentavos"], (int)$r["idCategoria"], (int)$r["idUsuario"]);
+
+        if (!$rows) {
+            return null;
         }
+
+        $resultado = [];
+
+        foreach ($rows as $r) {
+            $resultado[] = new Credito(
+                (int)$r["id"],
+                new DateTime($r["data"]),
+                $r["descricao"],
+                (int)$r["valorEmCentavos"],
+                (int)$r["idCategoria"],
+                (int)$r["idUsuario"]
+            );
+        }
+
         return $resultado;
     }
 
     public function update(int $id, CreditoDTO $DTO): ?Credito
     {
-        $sql = "UPDATE Creditos SET data = :data, descricao = :descricao,
-                valorEmCentavos = :valorEmCentavos, idCategoria = :idCategoria,
-                idUsuario = :idUsuario
+        if ($this->getById($id) === null) {
+            return null;
+        }
+
+        $sql = "UPDATE financas
+                SET data = :data,
+                    descricao = :descricao,
+                    valorEmCentavos = :valorEmCentavos,
+                    idCategoria = :idCategoria,
+                    idUsuario = :idUsuario
                 WHERE id = :id";
+
         $params = $this->params($DTO);
         $params[":id"] = $id;
+
         $stmt = $this->conn->prepare($sql);
         $stmt->execute($params);
+
         return $this->getById($id);
     }
 
     public function delete(int $id): void
     {
-        $stmt = $this->conn->prepare("DELETE FROM Creditos WHERE id = :id");
+        $sql = "DELETE f
+                FROM financas f
+                INNER JOIN creditos c ON c.idFinancia = f.id
+                WHERE f.id = :id";
+
+        $stmt = $this->conn->prepare($sql);
         $stmt->execute([":id" => $id]);
     }
 
     private function params(CreditoDTO $DTO): array
     {
-        $params = [
+        return [
             ":data" => $DTO->getData()->format("Y-m-d"),
             ":descricao" => $DTO->getDescricao(),
             ":valorEmCentavos" => $DTO->getValorEmCentavos(),
             ":idCategoria" => $DTO->getIdCategoria(),
             ":idUsuario" => $DTO->getIdUsuario()
         ];
-        
-        return $params;
     }
 }
