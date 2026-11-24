@@ -36,4 +36,10 @@ class RequerimentoService
     {
         $this->requerimentosRepository->delete($id);
     }
+
+    public function aprovarRequerimento(int $id, int $AdminId): void
+    {
+        $this->requerimentosRepository->aprovar($id, $AdminId);
+    }
+
 }

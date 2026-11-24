@@ -108,4 +108,21 @@ class RequerimentoRepository
 
         return $params;
     }
+
+    public function aprovar(int $id, int $AdminId): ?Requerimento
+    {
+        $sql = "UPDATE Requerimentos SET
+                status = :status,
+                idUsuarioAprovado = :idUsuarioAprovado
+            WHERE id = :id";
+
+        $params[":id"] = $id;
+        $params[":status"] = "APROVADO";
+        $params[":idUsuarioAprovado"] = $AdminId;
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+
+        return $this->getById($id);
+    }
 }
