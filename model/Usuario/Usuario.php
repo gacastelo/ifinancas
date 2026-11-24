@@ -8,8 +8,9 @@ class Usuario
     private string $senha;
     private DateTime $createdAt;
     private DateTime $updatedAt;
+    private bool $is_admin;
 
-    public function __construct(int $id, string $nome, string $email, string $senha, DateTime $createdAt = new DateTime(), DateTime $updatedAt = new DateTime())
+    public function __construct(int $id, string $nome, string $email, string $senha, DateTime $createdAt = new DateTime(), DateTime $updatedAt = new DateTime(), $is_admin = false)
     {
         $this->id = $id;
         $this->nome = $nome;
@@ -17,5 +18,49 @@ class Usuario
         $this->senha = $senha;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
+        $this->is_admin = $is_admin;
     }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function getNome(): string
+    {
+        return $this->nome;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function getSenha(): string
+    {
+        return $this->senha;
+    }
+
+    public function getCreatedAt(): DateTime
+    {
+        return $this->createdAt;
+    }
+    public function getUpdatedAt(): DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    public function __toString(): string
+    {
+        return
+        "ID: {$this->id}\n" .
+        "Nome: {$this->nome}\n" .
+        "Email: {$this->email}\n";
+    }
+
+    public function isAdmin()
+    {
+        return $this->is_admin;
+    }
+
 }

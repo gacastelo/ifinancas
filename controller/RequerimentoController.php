@@ -13,7 +13,7 @@ if (!isset($_SESSION["idUsuario"])) {
     http_response_code(401);
     exit("Usuário não autenticado.");
 }
-$service = new FinancaService();
+$service = new RequerimentoService();
 try {
 
     switch ($_SERVER["REQUEST_METHOD"]) {
