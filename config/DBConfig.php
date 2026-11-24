@@ -210,3 +210,5 @@ class DBConfig
         self::initializeDebito();
     }
 }
+
+DBConfig::initializeDB();
