@@ -22,4 +22,17 @@ class Financa
         $this->createdAt = new DateTime();
         $this->updatedAt = $this->createdAt;
     }
+
+    public function __toString(): string
+    {
+        return
+            "ID: {$this->id}\n" .
+            "Data: " . $this->data->format("d/m/Y") . "\n" .
+            "Descrição: {$this->descricao}\n" .
+            "Valor: R$ " . number_format($this->valorEmCentavos / 100, 2, ",", ".") . "\n" .
+            "Categoria: {$this->idCategoria}\n" .
+            "Usuário: {$this->idUsuario}\n" .
+            "Criado em: " . $this->createdAt->format("d/m/Y H:i:s") . "\n" .
+            "Atualizado em: " . $this->updatedAt->format("d/m/Y H:i:s");
+    }
 }
