@@ -33,7 +33,7 @@ class DBConfig
             id INT NOT NULL AUTO_INCREMENT,
             nome VARCHAR(50) NOT NULL UNIQUE,
             PRIMARY KEY (id)
-        )";
+        ) ENGINE=InnoDB;";
 
             $stmt = $conn->prepare($sql);
             $stmt->execute();
@@ -58,7 +58,7 @@ class DBConfig
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 ON UPDATE CURRENT_TIMESTAMP
-        )";
+        ) ENGINE=InnoDB;";
 
             $stmt = $conn->prepare($sql);
             $stmt->execute();
@@ -94,7 +94,7 @@ class DBConfig
             CONSTRAINT fk_financas_usuario
                 FOREIGN KEY (idUsuario)
                 REFERENCES usuarios(id)
-        )";
+        ) ENGINE=InnoDB;";
 
             $stmt = $conn->prepare($sql);
             $stmt->execute();
@@ -137,7 +137,7 @@ class DBConfig
             CONSTRAINT fk_requerimentos_idUsuarioAprovado
                 FOREIGN KEY (idUsuarioAprovado)
                 REFERENCES usuarios(id)
-        )";
+        ) ENGINE=InnoDB;";
 
             $stmt = $conn->prepare($sql);
             $stmt->execute();
@@ -160,7 +160,7 @@ class DBConfig
                 FOREIGN KEY (idFinancia)
                 REFERENCES financas(id)
                 ON DELETE CASCADE
-        )";
+        ) ENGINE=InnoDB;";
 
             $stmt = $conn->prepare($sql);
             $stmt->execute();
@@ -188,7 +188,7 @@ class DBConfig
             CONSTRAINT fk_debitos_requerimentos
                 FOREIGN KEY (requerimentoID)
                 REFERENCES requerimentos(id)
-        )";
+        ) ENGINE=InnoDB;";
 
             $stmt = $conn->prepare($sql);
             $stmt->execute();
