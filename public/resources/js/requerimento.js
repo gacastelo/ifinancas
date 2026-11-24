@@ -1,27 +1,24 @@
 const URL_REQUERIMENTO = "controller/RequerimentoController.php";
 
-$("#formCriarRequerimento").on("submit", function(e) {
-    e.preventDefault();
-    requisitarAjax(URL_REQUERIMENTO, "POST", $(this).serialize());
-});
+$(document).ready(function() {
+    $("#formCriarRequerimento").on("submit", function(e) {
+        e.preventDefault();
+        requisitarAjax(URL_REQUERIMENTO, "POST", $(this).serialize());
+    });
 
-$("#formBuscarRequerimento").on("submit", function(e) {
-    e.preventDefault();
-    const dados = Object.fromEntries(new FormData(this));
-    const id = dados.id;
-    requisitarAjax(URL_REQUERIMENTO + "?id=" + encodeURIComponent(id), "GET");
-});
+    $("#formBuscarRequerimento").on("submit", function(e) {
+        e.preventDefault();
+        requisitarAjax(URL_REQUERIMENTO + "?" + $(this).serialize(), "GET");
+    });
 
-$("#formAtualizarRequerimento").on("submit", function(e) {
-    e.preventDefault();
-    const dados = Object.fromEntries(new FormData(this));
-    const id = dados.id;
-    delete dados.id;
-    requisitarAjax(URL_REQUERIMENTO + "?id=" + encodeURIComponent(id), "PUT", dados);
-});
+    $("#formAtualizarRequerimento").on("submit", function(e) {
+        e.preventDefault();
+        const id = $(this).find('[name="id"]').val();
+        requisitarAjax(URL_REQUERIMENTO + "?id=" + encodeURIComponent(id), "PUT", $(this).serialize());
+    });
 
-$("#formExcluirRequerimento").on("submit", function(e) {
-    e.preventDefault();
-    const dados = Object.fromEntries(new FormData(this));
-    requisitarAjax(URL_REQUERIMENTO, "DELETE", dados);
+    $("#formExcluirRequerimento").on("submit", function(e) {
+        e.preventDefault();
+        requisitarAjax(URL_REQUERIMENTO, "DELETE", $(this).serialize());
+    });
 });

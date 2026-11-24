@@ -1,4 +1,4 @@
-function requisitarAjax(url, metodo, dados = {}) {
+function requisitarAjax(url, metodo, dados = "") {
     $.ajax({
         url: url,
         method: metodo,
@@ -14,26 +14,19 @@ function requisitarAjax(url, metodo, dados = {}) {
 }
 
 function mostrarResultadoAjax(tipo, metodo, url, resposta) {
-    const resultado = document.getElementById("resultado");
 
-    if (!resultado) {
-        alert(tipo + "\n" + resposta);
-        return;
-    }
-
-    if (resultado.textContent === "Nenhuma requisição realizada.") {
-        resultado.textContent = "";
-    }
-
-    resultado.textContent =
-        "==============================\n" +
+    let r = "==============================\n" +
         tipo + "\n" +
         "Método: " + metodo + "\n" +
         "URL: " + url + "\n" +
-        "Resposta:\n" + resposta + "\n\n" +
-        resultado.textContent;
+        "Resposta:\n" + resposta + "\n\n";
+
+    console.log(r)
+    return r;
 }
 
-$("#limparResultado").on("click", function() {
-    $("#resultado").text("Nenhuma requisição realizada.");
+$(document).ready(function() {
+    $("#limparResultado").on("click", function() {
+        $("#resultado").text("Nenhuma requisição realizada.");
+    });
 });
