@@ -58,7 +58,7 @@ class Usuario
         "Email: {$this->email}\n";
     }
 
-    public function isAdmin()
+    public function isAdmin(): bool
     {
         return $this->is_admin;
     }

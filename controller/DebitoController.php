@@ -26,10 +26,16 @@ try {
     switch ($_SERVER["REQUEST_METHOD"]) {
         case "GET":
             $id = (int) ($_GET["id"] ?? 0);
-            if ($id <= 0) {
+            if ($id < 0) {
                 http_response_code(400);
                 exit("ID inválido.");
             }
+
+            if ($id === 0){
+                $debitos = $service->getAll();
+                exit(print_r($debitos, true));
+            }
+            
             $debito = $service->getDebito($id);
             if ($debito === null) {
                 http_response_code(404);

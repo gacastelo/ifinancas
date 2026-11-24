@@ -41,5 +41,11 @@ class Requerimento
             "Criado em: " . $this->createdAt->format("d/m/Y H:i:s") . "\n" .
             "Atualizado em: " . $this->updatedAt->format("d/m/Y H:i:s");
     }
-
+    public function getData(): DateTime { return $this->data; }
+    public function getDescricao(): string { return $this->descricao; }
+    public function getValorEmCentavos(): int { return $this->valorEmCentavos; }
+    public function getIdCategoria(): int { return $this->idCategoria; }
+    public function getIdUsuario(): int { return $this->idUsuario; }
+    public function getStatus(): string { return $this->status; }
+    public function getIdUsuarioAprovado(): ?int { return $this->idUsuarioAprovado; }
 }

@@ -48,10 +48,16 @@ try {
 
         case "GET":
             $id = (int) ($_GET["id"] ?? 0);
-            if ($id <= 0) {
+            if ($id < 0) {
                 http_response_code(400);
                 exit("ID inválido.");
             }
+
+            if ($id === 0){
+                $creditos = $service->getAll();
+                exit(print_r($creditos, true));
+            }
+
             $credito = $service->getCredito($id);
             if ($credito === null) {
                 http_response_code(404);

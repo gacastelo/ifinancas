@@ -11,9 +11,12 @@ header("Content-Type: text/plain; charset=utf-8");
 
 $service = new UserService();
 
-if (!isset($_SESSION["idUsuario"])) {
-    http_response_code(401);
-    exit("Usuário não autenticado.");
+function userLoggedIn(): void
+{
+    if (!isset($_SESSION["idUsuario"])) {
+        http_response_code(401);
+        exit("Usuário não autenticado.");
+    }
 }
 
 try {
@@ -55,7 +58,7 @@ try {
             exit("Usuário cadastrado com sucesso.");
 
         case "GET":
-
+            userLoggedIn();
             $id = (int) ($_GET["id"] ?? $_SESSION["idUsuario"]);
 
             if ($id <= 0) {
@@ -79,7 +82,7 @@ try {
             );
 
         case "PUT":
-
+            userLoggedIn();
             parse_str(file_get_contents("php://input"), $dados);
 
             $id = (int) ($_GET["id"] ?? $_SESSION["idUsuario"]);
@@ -100,6 +103,7 @@ try {
             exit("Usuário atualizado com sucesso.");
 
         case "DELETE":
+            userLoggedIn();
             parse_str(file_get_contents("php://input"), $dados);
 
             $id = (int) ($dados["id"] ?? $_SESSION["idUsuario"]);

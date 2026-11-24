@@ -38,10 +38,16 @@ try {
         case "GET":
 
             $id = (int) ($_GET["id"] ?? 0);
-            if ($id <= 0) {
+            if ($id < 0) {
                 http_response_code(400);
                 exit("ID inválido.");
             }
+
+            if ($id === 0){
+                $requerimentos = $service->getAll();
+                exit(print_r($requerimentos, true));
+            }
+
             $requerimento = $service->getRequerimento($id);
             if ($requerimento === null) {
                 http_response_code(404);

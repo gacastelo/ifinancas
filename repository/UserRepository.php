@@ -133,7 +133,8 @@ class UserRepository
             $u["email"],
             $u["senha"],
             new DateTime($u["created_at"]),
-            new DateTime($u["updated_at"])
+            new DateTime($u["updated_at"]),
+            $u["is_admin"]
         );
     }
 }

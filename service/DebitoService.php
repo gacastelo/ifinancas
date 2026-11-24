@@ -36,4 +36,8 @@ class DebitoService
     {
         $this->debitosRepository->delete($id);
     }
+
+    public function aprovar(int $id): void{
+        $this->debitosRepository->aprovar($id);
+    }
 }
