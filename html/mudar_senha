@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+<body>
+ <div class="bloco1">
+    <form action="login.html">
+    <h1>Cadastro</h1>
+    <p>Nome:</p>
+    <input type="text" name="nome" placeholder="Ex: Maria" class="caixa1" required><br>
+    <p>Situaçao:</p>
+    <input type="radio" name="op" class="caixa1" required>
+    <label for="req">Aluno</label><br>
+    <input type="radio" name="op" class="caixa1">
+    <label for="adm">Administrador</label>
+    <p>Email:</p>
+    <input type="email" name="email" placeholder="Ex: Meu_email@hotemail.com"class="caixa1" required><br>
+    <p>Senha:</p>
+    <input type="password" name="senha" placeholder="Ex: confirme sua senha"class="caixa1" required><br><br>
+    <p>Confirmar senha:</p>
+    <input type="password" name="senha" placeholder="Ex: senha"class="caixa1" required><br><br>
+    <a href="login.html">
+    <input type="submit" value="Enviar"class="botao1">
+    </a>
+    <input type="reset" value="Limpar"class="botao1"><br>
+    </form>
+</div>
+</body>
+</html>
