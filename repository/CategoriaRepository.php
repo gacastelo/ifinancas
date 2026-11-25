@@ -44,8 +44,8 @@ class CategoriaRepository
             }
 
             return new Categoria(
-                (int)$dados["id"],
-                $dados["nome"]
+                $dados["nome"],
+                (int) $dados["id"]
             );
         } catch (PDOException $e) {
             throw $e;
@@ -73,7 +73,7 @@ class CategoriaRepository
         try {
             $sql = "DELETE FROM Categorias WHERE id = :id";
             $stmt = $this->conn->prepare($sql);
-            $stmt->execute();
+            $stmt->execute(['id' => $id]);
         } catch (PDOException $e) {
             throw $e;
         }
