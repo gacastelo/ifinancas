@@ -22,9 +22,9 @@ class FinancaService
         return $this->financasRepository->getById($id);
     }
 
-    public function getAll(): ?array
+    public function getAll(string $type = "ALL", ?DateTime $dataInicio = null, ?DateTime $dataFinal = null, ?int $categoriaId = 0): ?array
     {
-        return $this->financasRepository->getAll();
+        return $this->financasRepository->getAllFilter($type, $dataInicio,$dataFinal,$categoriaId);
     }
 
     public function updateFinanca(int $id, FinancaDTO $DTO): void
@@ -35,5 +35,10 @@ class FinancaService
     public function deleteFinanca(int $id): void
     {
         $this->financasRepository->delete($id);
+    }
+
+    public function getSaldo(): ?string
+    {
+        return number_format($this->financasRepository->getSaldo() / 100, 2, ",", ".");
     }
 }

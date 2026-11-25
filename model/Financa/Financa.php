@@ -26,13 +26,59 @@ class Financa
     public function __toString(): string
     {
         return
-            "ID: {$this->id}\n" .
-            "Data: " . $this->data->format("d/m/Y") . "\n" .
-            "Descrição: {$this->descricao}\n" .
-            "Valor: R$ " . number_format($this->valorEmCentavos / 100, 2, ",", ".") . "\n" .
+            "ID:{$this->id}\n" .
+            "Data:" . $this->data->format("d/m/Y") . "\n" .
+            "Descricao: {$this->descricao}\n" .
+            "Valor:" . number_format($this->valorEmCentavos / 100, 2, ",", ".") . "\n" .
             "Categoria: {$this->idCategoria}\n" .
-            "Usuário: {$this->idUsuario}\n" .
-            "Criado em: " . $this->createdAt->format("d/m/Y H:i:s") . "\n" .
-            "Atualizado em: " . $this->updatedAt->format("d/m/Y H:i:s");
+            "Usuario: {$this->idUsuario}\n" .
+            "Criado_em: " . $this->createdAt->format("d/m/Y H:i:s") . "\n" .
+            "Atualizado_em: " . $this->updatedAt->format("d/m/Y H:i:s");
+    }
+
+    public function getData(): DateTime
+    {
+        return $this->data;
+    }
+    public function getDescricao(): string
+    {
+        return $this->descricao;
+    }
+    public function getValorEmCentavos(): int
+    {
+        return $this->valorEmCentavos;
+    }
+    public function getIdCategoria(): int
+    {
+        return $this->idCategoria;
+    }
+    public function getIdUsuario(): int
+    {
+        return $this->idUsuario;
+    }
+    public function getCreatedAt(): DateTime
+    {
+        return $this->createdAt;
+    }
+    public function getUpdatedAt(): DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    public function getValor(): string
+    {
+        return number_format($this->valorEmCentavos / 100, 2, ",", ".");
+    }
+
+    public function toArray(): array
+    {
+        return [
+            "id" => $this->id,
+            "data" => $this->data->format("Y-m-d"),
+            "descricao" => $this->descricao,
+            "valorEmCentavos" => $this->valorEmCentavos,
+            "idCategoria" => $this->idCategoria,
+            "idUsuario" => $this->idUsuario
+        ];
     }
 }

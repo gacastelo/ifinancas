@@ -43,6 +43,30 @@ header {
     background-color: #d5d5d5;
 }
 
+.botao_logout {
+    text-decoration: none;
+    color: #fdfdfd;
+    background-color: #a30000;
+    padding: 10px 22px;
+    border-radius: 5px;
+}
+
+.botao_logout:hover {
+    background-color: #6a0000;
+}
+
+.botao_admin {
+    text-decoration: none;
+    color: #fdfdfd;
+    background-color: #238c02;
+    padding: 10px 22px;
+    border-radius: 5px;
+}
+
+.botao_admin:hover {
+    background-color: #186101;
+}
+
 /* MOVIMENTAÇÕES */
 .movimentacoes {
     margin: 40px auto;

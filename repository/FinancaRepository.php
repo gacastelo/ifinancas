@@ -46,6 +46,69 @@ class FinancaRepository
         return $resultado;
     }
 
+    public function getAllFilter(
+        string $type = "ALL",
+        ?DateTime $dataInicio = null,
+        ?DateTime $dataFinal = null,
+        ?int $categoriaId = 0
+    ): ?array {
+
+        $sql = "SELECT f.*
+            FROM financas f
+            LEFT JOIN creditos c ON c.idFinancia = f.id
+            LEFT JOIN debitos d ON d.idFinancia = f.id
+            WHERE 1 = 1";
+
+        $params = [];
+
+        if ($type === "CREDITO") {
+            $sql .= " AND c.idFinancia IS NOT NULL";
+        } elseif ($type === "DEBITO") {
+            $sql .= " AND d.idFinancia IS NOT NULL";
+        } elseif ($type !== "ALL") {
+            throw new InvalidArgumentException("Tipo inválido.");
+        }
+
+        if ($dataInicio !== null) {
+            $sql .= " AND f.data >= :dataInicio";
+            $params["dataInicio"] = $dataInicio->format("Y-m-d");
+        }
+
+        if ($dataFinal !== null) {
+            $sql .= " AND f.data <= :dataFinal";
+            $params["dataFinal"] = $dataFinal->format("Y-m-d");
+        }
+
+        if ($categoriaId !== null && $categoriaId > 0) {
+            $sql .= " AND f.idCategoria = :categoriaId";
+            $params["categoriaId"] = $categoriaId;
+        }
+
+        $sql .= " ORDER BY f.data DESC, f.id DESC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!$rows) return null;
+
+        $resultado = [];
+
+        foreach ($rows as $r) {
+            $resultado[] = new Financa(
+                (int)$r["id"],
+                new DateTime($r["data"]),
+                $r["descricao"],
+                (int)$r["valorEmCentavos"],
+                (int)$r["idCategoria"],
+                (int)$r["idUsuario"]
+            );
+        }
+
+        return $resultado;
+    }
+
     public function update(int $id, FinancaDTO $DTO): ?Financa
     {
         $sql = "UPDATE Financas SET data = :data, descricao = :descricao,
@@ -74,7 +137,36 @@ class FinancaRepository
             ":idCategoria" => $DTO->getIdCategoria(),
             ":idUsuario" => $DTO->getIdUsuario()
         ];
-        
+
         return $params;
+    }
+
+    public function getSaldo(): ?int
+    {
+        $sql = "SELECT
+                totalCreditos,
+                totalDebitos,
+                totalCreditos - totalDebitos AS saldo
+            FROM (
+                SELECT
+                    COALESCE((
+                        SELECT SUM(f.valorEmCentavos)
+                        FROM creditos c
+                        INNER JOIN financas f ON f.id = c.idFinancia
+                    ), 0) AS totalCreditos,
+
+                    COALESCE((
+                        SELECT SUM(f.valorEmCentavos)
+                        FROM debitos d
+                        INNER JOIN financas f ON f.id = d.idFinancia
+                    ), 0) AS totalDebitos
+            ) AS totais";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+
+        $r = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $r !== false ? $r["saldo"] : null;
     }
 }

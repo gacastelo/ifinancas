@@ -4,22 +4,34 @@
 require_once "../model/Financa/Financa.php";
 require_once "../model/Financa/FinancaDTO.php";
 require_once "../service/FinancaService.php";
+require_once "../service/CategoriaService.php";
 
 session_start();
 
 header("Content-Type: text/plain; charset=utf-8");
 
-if (!isset($_SESSION["idUsuario"])) {
-    http_response_code(401);
-    exit("Usuário não autenticado.");
+function userIsLogged(): void
+{
+    if (!isset($_SESSION["idUsuario"])) {
+        http_response_code(401);
+        exit("Usuário não autenticado.");
+    }
+}
+function isAdmin(): void
+{
+    if ($_SESSION["isAdmin"] != 1){
+        http_response_code(403);
+        exit("Acesso negado.");
+    }
 }
 $service = new FinancaService();
+$catService = new CategoriaService();
 try {
 
     switch ($_SERVER["REQUEST_METHOD"]) {
 
         case "POST":
-
+            userIsLogged();
             $data = new DateTime($_POST["data"]);
 
             $DTO = new FinancaDTO(
@@ -36,18 +48,73 @@ try {
             exit("Financa cadastrado com sucesso.");
 
         case "GET":
-            $id = (int) ($_GET["id"] ?? 0);
-            if ($id <= 0) {
+
+            if (isset($_GET["id"])) {
+
+                $id = (int) $_GET["id"];
+
+                if ($id <= 0) {
+                    http_response_code(400);
+                    exit("ID inválido.");
+                }
+
+                $financa = $service->getFinanca($id);
+
+                if ($financa === null) {
+                    http_response_code(404);
+                    exit("Finança não encontrada.");
+                }
+
+                exit((string) $financa);
+            }
+
+            $type = strtoupper($_GET["type"] ?? "ALL");
+
+            $dataInicio = !empty($_GET["dataInicio"])
+                ? new DateTime($_GET["dataInicio"])
+                : null;
+
+            $dataFinal = !empty($_GET["dataFinal"])
+                ? new DateTime($_GET["dataFinal"])
+                : null;
+
+            $categoriaId = isset($_GET["categoriaId"])
+                ? (int) $_GET["categoriaId"]
+                : 0;
+
+            if (!in_array($type, ["ALL", "CREDITO", "DEBITO"])) {
                 http_response_code(400);
-                exit("ID inválido.");
+                exit("Tipo inválido.");
             }
-            $financa = $service->getFinanca($id);
-            if ($financa === null) {
-                http_response_code(404);
-                exit("Financa não encontrada.");
+
+            if ($categoriaId < 0) {
+                http_response_code(400);
+                exit("Categoria inválida.");
             }
-            exit((string) $financa);
+
+            $financas = $service->getAll(
+                $type,
+                $dataInicio,
+                $dataFinal,
+                $categoriaId
+            );
+
+            if ($financas === null) {
+                exit("Nenhuma finança encontrada.");
+            }
+
+            $resultado = [];
+
+            foreach ($financas as $financa) {
+                $f = $financa->toArray();
+                $f["categoria"] = $catService->getCategoria($f["idCategoria"])->getNome();
+                $resultado[] = $f;
+            }
+
+            echo json_encode($resultado, JSON_UNESCAPED_UNICODE);
+            break;
         case "PUT":
+            isAdmin();
             parse_str(file_get_contents("php://input"), $dados);
             $id = (int) ($_GET["id"] ?? 0);
             if ($id <= 0) {
@@ -66,6 +133,7 @@ try {
             exit("Financa atualizado com sucesso.");
 
         case "DELETE":
+            isAdmin();
             parse_str(file_get_contents("php://input"), $dados);
             $id = (int) ($dados["id"] ?? 0);
             if ($id <= 0) {
