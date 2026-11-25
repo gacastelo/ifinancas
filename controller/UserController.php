@@ -44,6 +44,12 @@ try {
                 exit("Login realizado com sucesso.");
             }
 
+            if ($_POST["senha"] !== $_POST["senhaConfirma"]) {
+                http_response_code(401);
+                exit("Suas senhas não coincidem.");
+            }
+
+
             $DTO = new UsuarioDTO(
                 $_POST["nome"],
                 $_POST["email"]
@@ -132,5 +138,5 @@ try {
 
     error_log($e->getMessage());
     http_response_code(500);
-    exit("Erro ao processar usuário: " . $e->getMessage());
+    exit($e->getMessage());
 }
